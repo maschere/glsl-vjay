@@ -18,7 +18,7 @@ uniform float freq2;
 uniform float freq3;
 uniform float freq4;
 
-
+uniform sampler2D iChannel0;
 
 // Layer between Processing and Shadertoy uniforms
 vec3 iResolution = vec3(resolution,0.0);
@@ -26,6 +26,10 @@ float iGlobalTime = time;
 
 uniform vec2 mousePressed; // (0.0,0.0) no click, (1.0,1.0) left mouse button pressed
 vec4 iMouse = vec4(mouse.xy,mousePressed.xy);
+
+
+//shader specif uniforms
+uniform float hideStars;
 
 // ------- Below is the unmodified Shadertoy code ----------
 
@@ -112,7 +116,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 	vec3 rnd2 = nrand3( seed2 );
 	starcolor += vec4(pow(rnd2.y,40.0));
 	
-	fragColor = mix(freqs[3]-.3, 1., v) * vec4(1.5*freqs[2] * t * t* t , 1.2*freqs[1] * t * t, freqs[3]*t, 1.0)+c2+starcolor;
+	fragColor = mix(freqs[3]-.3, 1., v) * vec4(1.5*freqs[2] * t * t* t , 1.2*freqs[1] * t * t, freqs[3]*t, 1.0)+c2;
+	
+	if (hideStars==0.0)
+		fragColor += starcolor;
+	
+	//alpha blend
+	vec4 imgCol = texture2D(iChannel0,fragCoord.xy / iResolution.xy).rgba;
+	if (imgCol.a > 0.0)
+	{
+		float alpha = fragColor.a * (fragColor.r+fragColor.g+fragColor.b)/3.0;
+		fragColor = alpha * fragColor + (1.0-alpha)*imgCol;
+	}
 }
 
 //main image wrapper

@@ -30,7 +30,7 @@ float smoothing = 0.7;
 
 void setup() {
   size(800, 450, P2D);
-  frameRate(30);
+  frameRate(60);
   scene = createGraphics(width, height, P2D);
 
   //change this to the ip address of your mobile osc device
@@ -98,6 +98,13 @@ void oscEvent(OscMessage theOscMessage)
   }
 }
 
+
+public void setLabel(String label, String text)
+{
+  OscMessage labelData = new OscMessage(label);
+  labelData.add(text);//append these items
+  oscP5.send(labelData, remoteAddr);//send the message 
+}
 
 void stop()
 {

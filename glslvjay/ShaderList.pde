@@ -9,17 +9,20 @@ void setupShaders() {
   //GShader soundinput = new GShader("soundinput.glsl");
   //shaderList.add(soundinput);
 
-  //galaxy shader
-  GShader galaxy = new GShader("galaxy.glsl");
-  shaderList.add(galaxy);
-  galaxy.parameters.add(new Param("testbool"));
+
 
   //cubescape shader
   GShader cubescape = new GShader("cubescape.glsl");
   shaderList.add(cubescape);
-  cubescape.parameters.add(new Param("testbool2"));
+  cubescape.parameters.add(new Param("brightness",-0.5,5));
+  cubescape.parameters.add(new Param("rotation",-1,1));
+  cubescape.tex1files = new String[]{ "None", "wood1.jpg" };
   
-  
+    //galaxy shader
+  GShader galaxy = new GShader("galaxy.glsl");
+  shaderList.add(galaxy);
+  galaxy.parameters.add(new Param("hideStars"));
+  galaxy.tex1files = new String[]{ "None", "wood1.jpg" };
   //init current shader
   initCurrentShader();
 }
@@ -46,10 +49,16 @@ void initCurrentShader() {
 }
 
 void prevShader(float val) {
-  currentShaderIdx = (currentShaderIdx - 1) % shaderList.size();
-  initCurrentShader();
+  if (val==0.0){
+    currentShaderIdx = (currentShaderIdx - 1) % shaderList.size();
+    if (currentShaderIdx<0)
+      currentShaderIdx=shaderList.size()-1;
+    initCurrentShader();
+  }
 }
 void nextShader(float val) {
-  currentShaderIdx = (currentShaderIdx + 1) % shaderList.size();
-  initCurrentShader();
+  if (val==0.0){
+    currentShaderIdx = (currentShaderIdx + 1) % shaderList.size();
+    initCurrentShader();
+  }
 }

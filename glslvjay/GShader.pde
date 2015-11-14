@@ -7,11 +7,14 @@ class GShader
   ArrayList<Param> parameters;
   
 
-  float masterIntensity = 0.5;
+  float masterIntensity = 0.4;
   float masterSpeed = 1.0;
   float i4,i1,i2,i3 = 0.3; //freq band intensities
-  int f4,f1,f2,f3 = 100; //freq band middle Hz
-  int w1,w2,w3,w4 = 10; //freq band width Hz
+  int f1 = 160;
+  int f2 = f1*7;
+  int f3 = f2*2;
+  int f4 = f3*2;
+  int w1,w2,w3,w4 = 50; //freq band width Hz
   
   //colors and textures
   String color1name,color2name;
@@ -53,17 +56,17 @@ class GShader
     myShader.set("freq4",freqs[3]*masterIntensity*i4);
     
     //set colors and textures if not null
-    if (color1name!=null)
+    if (color1name!=null && color1!=null)
       myShader.set("myCol1",color1);
     
-    if (color2name!=null)
+    if (color2name!=null && color2!=null)
       myShader.set("myCol2",color2);
       
-    if (tex1files!=null)
-      myShader.set("myTex1",tex1);
+    if (tex1files!=null && tex1!=null)
+      myShader.set("iChannel0",tex1); //<>//
       
-    if (tex2files!=null)
-      myShader.set("myTex2",tex2);
+    if (tex2files!=null && tex2!=null)
+      myShader.set("iChannel1",tex2);
 
     for (Param p : parameters) {
       myShader.set(p.name, p.value);
@@ -79,25 +82,22 @@ class GShader
         //bind toggle
         p.plug("/3/toggle"+toggleNum);
         //set label
-        OscMessage labelData = new OscMessage("/3/tlabel"+sliderNum);
-        labelData.add(p.name);//append these items
-        oscP5.send(labelData, remoteAddr);//send the message
+        setLabel("/3/tlabel"+sliderNum,p.name);
         toggleNum += 1;
       }
       else {
         //bind slider
         p.plug("/3/fader"+sliderNum);
         //set label
-        OscMessage labelData = new OscMessage("/3/label"+sliderNum);
-        labelData.add(p.name);//append these items
-        oscP5.send(labelData, remoteAddr);//send the message
+        setLabel("/3/label"+sliderNum,p.name);
         sliderNum += 1;
       }
     }
     
     //bind default plugs
     oscP5.plug(this,"intensitySlider","/1/fader1");
-    oscP5.plug(this,"speedSlider","/1/fader2");
+    oscP5.plug(this,"speedSlider","/1/fader3");
+    oscP5.plug(this,"smoothSlider","/1/fader2");
     oscP5.plug(this,"padxy1","/1/xy1");
     oscP5.plug(this,"padxy2","/1/xy2");
     oscP5.plug(this,"padxy3","/1/xy3");
@@ -134,49 +134,70 @@ class GShader
     }
     
     if (tex1files!=null){
-      OscMessage labelData = new OscMessage("/2/texlabel1");
-      labelData.add(tex1files[tex1idx]);//append these items
-      oscP5.send(labelData, remoteAddr);//send the message
-      oscP5.plug(this,"prevTex1","/2/push1");
-      oscP5.plug(this,"nextTex1","/2/push2");
+      setLabel("/2/texlabel1",tex1files[tex1idx]);
+      oscP5.plug(this,"prevTex1","/2/prevPush1");
+      oscP5.plug(this,"nextTex1","/2/nextPush1");
     }
     
     if (tex2files!=null){
-      OscMessage labelData = new OscMessage("/2/texlabel2");
-      labelData.add(tex2files[tex2idx]);//append these items
-      oscP5.send(labelData, remoteAddr);//send the message
-      oscP5.plug(this,"prevTex2","/2/push3");
-      oscP5.plug(this,"nextTex2","/2/push4");
+      setLabel("/2/texlabel2",tex2files[tex2idx]);
+      oscP5.plug(this,"prevTex2","/2/prevPush2");
+      oscP5.plug(this,"nextTex2","/2/nextPush2");
     }
+     modTexIdx();
   }
   
   void modTexIdx() {
     //todo: smooth texture blend on change
     if (tex1files!=null) {
       tex1idx = tex1idx % tex1files.length;
-      tex1 = loadImage(tex1files[tex1idx]);
+      if (tex1idx < 0)
+        tex1idx = tex1files.length-1;
+        
+      setLabel("/2/texlabel1",tex1files[tex1idx]);
+      
+      if (tex1files[tex1idx]=="None")
+        tex1 = createImage(2, 2, ARGB);
+      else
+        tex1 = loadImage(tex1files[tex1idx]);
     }
     if (tex2files!=null) {
       tex2idx = tex2idx % tex2files.length;
-      tex2 = loadImage(tex2files[tex2idx]);
+      if (tex2idx < 0)
+        tex2idx = tex2files.length-1;
+        
+      setLabel("/2/texlabel2",tex2files[tex2idx]);
+        
+      if (tex2files[tex1idx]=="None")
+        tex2 = createImage(2, 2, ARGB);
+      else
+        tex2 = loadImage(tex2files[tex2idx]);
     }
   }
   
   public void nextTex1(float val) {
-    tex1idx += 1;
-    modTexIdx();
+    if (val==0.0){
+      tex1idx += 1; //<>//
+      modTexIdx();
+    }
   }
   public void prevTex1(float val) {
-    tex1idx -= 1;
-    modTexIdx();
+    if (val==0.0){
+      tex1idx -= 1;
+      modTexIdx();
+    }
   }
   public void nextTex2(float val) {
-    tex2idx += 1;
-    modTexIdx();
+    if (val==0.0){
+      tex2idx += 1;
+      modTexIdx();
+    }
   }
   public void prevTex2(float val) {
-    tex2idx -= 1;
-    modTexIdx();
+    if (val==0.0){
+      tex2idx -= 1;
+      modTexIdx();
+    }
   }
   
   public void setR1(float val) {
@@ -209,6 +230,9 @@ class GShader
   }
   public void speedSlider(float val) {
     masterSpeed = val;
+  }
+  public void smoothSlider(float val) {
+    smoothing = sqrt(val);
   }
   
   public void padxy1(float y, float x) {

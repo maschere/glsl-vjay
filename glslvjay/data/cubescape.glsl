@@ -15,14 +15,26 @@ uniform float freq2;
 uniform float freq3;
 uniform float freq4;
 
+uniform vec4 myCol1;
+uniform vec4 myCol2;
+
 // Layer between Processing and Shadertoy uniforms
+
 uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
 
 vec3 iResolution = vec3(resolution,0.0);
 float iGlobalTime = time;
 
 uniform vec2 mousePressed; // (0.0,0.0) no click, (1.0,1.0) left mouse button pressed
 vec4 iMouse = vec4(mouse.xy,mousePressed.xy);
+
+
+//shader specific uniforms
+uniform float brightness;
+uniform float rotation;
+
+
 
 // Created by inigo quilez - iq/2013
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -304,16 +316,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	freqs[3] = freq4;
 
     //-----------
-    float time = 5.0 + 0.2*iGlobalTime + 20.0*iMouse.x/iResolution.x;
+    float time = 5.0 + 0.2*iGlobalTime + 20.0*rotation;
 
     vec3 tot = vec3(0.0);
-    #ifdef ANTIALIAS
-    for( int i=0; i<4; i++ )
+    for( int i=0; i<8; i++ )
     {
         vec2 off = vec2( mod(float(i),2.0), mod(float(i/2),2.0) )/2.0;
-    #else
-        vec2 off = vec2(0.0);
-    #endif        
+     
         vec2 xy = (-iResolution.xy+2.0*(fragCoord.xy+off)) / iResolution.y;
 
         // camera	
@@ -328,14 +337,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         vec3 col = render( ro, rd );
         
         tot += pow( col, vec3(0.4545) );
-    #ifdef ANTIALIAS
     }
-	tot /= 4.0;
-    #endif    
+	tot /= 8.0;
+ 
     
     // vigneting
 	vec2 q = fragCoord.xy/iResolution.xy;
-    tot *= 2.2 + 0.8*pow( 16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y), 0.1 );
+    tot *= brightness + 0.8*pow( 16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y), 0.1 );
 
     fragColor=vec4( tot, 1.0 );
 
