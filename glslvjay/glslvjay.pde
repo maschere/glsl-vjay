@@ -24,6 +24,10 @@ float scaledMillis = 0.0;
 int deltaMillis = 0;
 int oldMillis = 0;
 
+float freqs[];
+
+float smoothing = 0.7;
+
 void setup() {
   size(800, 450, P2D);
   frameRate(30);
@@ -42,7 +46,7 @@ void setup() {
   //fft analysis for frequency spectrum
   fft = new FFT(in.bufferSize(), in.sampleRate());
   
- 
+  freqs = new float[4];
   //load shaders
   setupShaders();
 
@@ -50,7 +54,7 @@ void setup() {
 
 void draw() {
   //compute ffts of current frame
-  fft.forward(in.right);
+  fft.forward(in.mix);
 
   //set uniforms accordingly for shader
   deltaMillis = millis()-oldMillis;

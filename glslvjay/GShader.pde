@@ -37,16 +37,20 @@ class GShader
     myShader.set("time", scaledMillis);
 
     float currentFreq = fft.calcAvg(max(f1-w1,20),min(f1+w1,16000));
-    myShader.set("freq1",currentFreq*masterIntensity*i1);
+    freqs[0] = smoothing*freqs[0] + (1-smoothing)*currentFreq;
+    myShader.set("freq1",freqs[0]*masterIntensity*i1);
 
     currentFreq = fft.calcAvg(max(f2-w2,20),min(f2+w2,16000));
-    myShader.set("freq2",currentFreq*masterIntensity*i2);
+    freqs[1] = smoothing*freqs[1] + (1-smoothing)*currentFreq;
+    myShader.set("freq2",freqs[1]*masterIntensity*i2);
 
     currentFreq = fft.calcAvg(max(f3-w3,20),min(f3+w3,16000));
-    myShader.set("freq3",currentFreq*masterIntensity*i3);
+    freqs[2] = smoothing*freqs[2] + (1-smoothing)*currentFreq;
+    myShader.set("freq3",freqs[2]*masterIntensity*i3);
 
     currentFreq = fft.calcAvg(max(f4-w4,20),min(f4+w4,16000));
-    myShader.set("freq4",currentFreq*masterIntensity*i4);
+    freqs[3] = smoothing*freqs[3] + (1-smoothing)*currentFreq;
+    myShader.set("freq4",freqs[3]*masterIntensity*i4);
     
     //set colors and textures if not null
     if (color1name!=null)

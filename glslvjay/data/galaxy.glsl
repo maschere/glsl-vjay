@@ -18,6 +18,8 @@ uniform float freq2;
 uniform float freq3;
 uniform float freq4;
 
+
+
 // Layer between Processing and Shadertoy uniforms
 vec3 iResolution = vec3(resolution,0.0);
 float iGlobalTime = time;

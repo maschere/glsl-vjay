@@ -5,10 +5,19 @@ int currentShaderIdx = 0;
 //load all the suitable shaders from the data directory
 //add the parameters for each shader
 void setupShaders() {
+  //sound input shader
+  //GShader soundinput = new GShader("soundinput.glsl");
+  //shaderList.add(soundinput);
+
   //galaxy shader
   GShader galaxy = new GShader("galaxy.glsl");
   shaderList.add(galaxy);
   galaxy.parameters.add(new Param("testbool"));
+
+  //cubescape shader
+  GShader cubescape = new GShader("cubescape.glsl");
+  shaderList.add(cubescape);
+  cubescape.parameters.add(new Param("testbool2"));
   
   
   //init current shader

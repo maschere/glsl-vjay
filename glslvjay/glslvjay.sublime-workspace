@@ -24,10 +24,10 @@
 	"buffers":
 	[
 		{
-			"file": "Param.pde",
+			"file": "glslvjay.pde",
 			"settings":
 			{
-				"buffer_size": 704,
+				"buffer_size": 2428,
 				"line_ending": "Windows"
 			}
 		},
@@ -35,23 +35,32 @@
 			"file": "GShader.pde",
 			"settings":
 			{
-				"buffer_size": 6530,
+				"buffer_size": 6770,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "glslvjay.pde",
+			"file": "data/galaxy.glsl",
 			"settings":
 			{
-				"buffer_size": 2366,
-				"line_ending": "Windows"
+				"buffer_size": 3548,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "data/cubescape.glsl",
+			"settings":
+			{
+				"buffer_size": 8756,
+				"line_ending": "Windows",
+				"name": "cubescape.glsl"
 			}
 		},
 		{
 			"file": "ShaderList.pde",
 			"settings":
 			{
-				"buffer_size": 1226,
+				"buffer_size": 1495,
 				"line_ending": "Windows"
 			}
 		}
@@ -121,16 +130,20 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay"
+		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay",
+		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/data"
 	],
 	"file_history":
 	[
+		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/data/soundinput.glsl",
+		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/GShader.pde",
+		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/Param.pde",
 		"/C/Users/Max/OneDrive/processing sketches/GLSLvjay/GLSLvjay.pde",
 		"/C/Users/Max/Documents/GitHub/glsl-vjay/glsl-vjsay.sublime-workspace"
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 23.0
 	},
 	"find_in_files":
 	{
@@ -144,6 +157,10 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"minVal",
+			"minBandwidthPerOctave",
+			"maxViewportUsage",
+			"ichannel"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -161,24 +178,24 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Param.pde",
+					"file": "glslvjay.pde",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 704,
+						"buffer_size": 2428,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								74,
-								0
+								521,
+								530
 							]
 						],
 						"settings":
@@ -191,7 +208,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -200,15 +217,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6530,
+						"buffer_size": 6770,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1392,
-								1392
+								1120,
+								1120
 							]
 						],
 						"settings":
@@ -218,57 +235,87 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 324.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "glslvjay.pde",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2366,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								499,
-								499
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Processing/Syntaxes/Processing.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 360.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "ShaderList.pde",
+					"buffer": 2,
+					"file": "data/galaxy.glsl",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1226,
+						"buffer_size": 3548,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								790,
-								790
+								376,
+								376
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1260.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "data/cubescape.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8756,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8496,
+								8496
+							]
+						],
+						"settings":
+						{
+							"auto_name": "cubescape.glsl",
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4538.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "ShaderList.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1495,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								285,
+								285
 							]
 						],
 						"settings":
@@ -278,10 +325,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 23.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -289,7 +336,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 0.0
+		"height": 23.0
 	},
 	"input":
 	{
@@ -330,7 +377,7 @@
 	"project": "glslvjay.sublime-project",
 	"replace":
 	{
-		"height": 0.0
+		"height": 42.0
 	},
 	"save_all_on_build": true,
 	"select_file":
