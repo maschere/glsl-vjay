@@ -27,7 +27,7 @@
 			"file": "glslvjay.pde",
 			"settings":
 			{
-				"buffer_size": 2428,
+				"buffer_size": 2982,
 				"line_ending": "Windows"
 			}
 		},
@@ -35,23 +35,15 @@
 			"file": "GShader.pde",
 			"settings":
 			{
-				"buffer_size": 6770,
+				"buffer_size": 7530,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "data/galaxy.glsl",
-			"settings":
-			{
-				"buffer_size": 3548,
-				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "data/cubescape.glsl",
 			"settings":
 			{
-				"buffer_size": 8756,
+				"buffer_size": 8794,
 				"line_ending": "Windows",
 				"name": "cubescape.glsl"
 			}
@@ -60,8 +52,16 @@
 			"file": "ShaderList.pde",
 			"settings":
 			{
-				"buffer_size": 1495,
+				"buffer_size": 1700,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "data/galaxy.glsl",
+			"settings":
+			{
+				"buffer_size": 4226,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -136,6 +136,7 @@
 	"file_history":
 	[
 		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/data/soundinput.glsl",
+		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/data/galaxy.glsl",
 		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/GShader.pde",
 		"/C/Users/Max/Documents/GitHub/glsl-vjay/glslvjay/Param.pde",
 		"/C/Users/Max/OneDrive/processing sketches/GLSLvjay/GLSLvjay.pde",
@@ -143,7 +144,7 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
@@ -157,6 +158,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"iChannel1",
 			"minVal",
 			"minBandwidthPerOctave",
 			"maxViewportUsage",
@@ -178,7 +180,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -187,15 +189,106 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2428,
+						"buffer_size": 2982,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								521,
-								530
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Processing/Syntaxes/Processing.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "GShader.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7530,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1919,
+								1919
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Processing/Syntaxes/Processing.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 360.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "data/cubescape.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8794,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								340,
+								340
+							]
+						],
+						"settings":
+						{
+							"auto_name": "cubescape.glsl",
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "ShaderList.pde",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1700,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								709
 							]
 						],
 						"settings":
@@ -212,50 +305,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "GShader.pde",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6770,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1120,
-								1120
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Processing/Syntaxes/Processing.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
+					"buffer": 4,
 					"file": "data/galaxy.glsl",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3548,
+						"buffer_size": 4226,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								376,
-								376
+								3861,
+								3861
 							]
 						],
 						"settings":
@@ -264,71 +327,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1260.0,
+						"translation.y": 1617.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "data/cubescape.glsl",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8756,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8496,
-								8496
-							]
-						],
-						"settings":
-						{
-							"auto_name": "cubescape.glsl",
-							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4538.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "ShaderList.pde",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1495,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								285,
-								285
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Processing/Syntaxes/Processing.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 23.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

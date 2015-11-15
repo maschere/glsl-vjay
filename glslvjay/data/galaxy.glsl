@@ -1,5 +1,4 @@
-// LAVA LAMP
-// Based on https://www.shadertoy.com/view/MdsGRH by Trisomie21
+// Based on https://www.shadertoy.com/view/MslGWN by CBS
 
 #ifdef GL_ES
 precision highp float;
@@ -19,10 +18,13 @@ uniform float freq3;
 uniform float freq4;
 
 uniform sampler2D iChannel0;
+uniform float iChannel0ar;
 
 // Layer between Processing and Shadertoy uniforms
 vec3 iResolution = vec3(resolution,0.0);
 float iGlobalTime = time;
+
+float myAr = resolution.x / resolution.y;
 
 uniform vec2 mousePressed; // (0.0,0.0) no click, (1.0,1.0) left mouse button pressed
 vec4 iMouse = vec4(mouse.xy,mousePressed.xy);
@@ -122,11 +124,21 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 		fragColor += starcolor;
 	
 	//alpha blend
-	vec4 imgCol = texture2D(iChannel0,fragCoord.xy / iResolution.xy).rgba;
+	vec2 imgCoord = fragCoord.xy / iResolution.xy;
+	if( iChannel0ar > myAr ) {
+		imgCoord.y *= iChannel0ar/myAr;
+		//imgCoord.x += .5 * ( 1. - myAr / iChannel0ar );
+	}
+
+	if( iChannel0ar < myAr ) {
+		imgCoord.x *= myAr/iChannel0ar;
+		//imgCoord.y += .5 * ( 1. - iChannel0ar / myAr );
+	}
+	vec4 imgCol = texture2D(iChannel0,imgCoord).rgba;
 	if (imgCol.a > 0.0)
 	{
 		float alpha = fragColor.a * (fragColor.r+fragColor.g+fragColor.b)/3.0;
-		fragColor = alpha * fragColor + (1.0-alpha)*imgCol;
+		fragColor = v*alpha * fragColor + (1.0-alpha)*imgCol*v;
 	}
 }
 

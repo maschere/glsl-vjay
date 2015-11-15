@@ -24,8 +24,6 @@ class GShader
   PImage tex1,tex2;
   
   
-  
-  
   GShader(String path) {
     this.path = path;
     myShader = loadShader(path);
@@ -67,6 +65,7 @@ class GShader
     if (tex1files!=null && tex1!=null)
     {
       myShader.set("iChannel0",tex1); //<>//
+      println(tex1.width);
       myShader.set("iChannel0ar",tex1.width / float(tex1.height));
     }
       
@@ -82,7 +81,6 @@ class GShader
   
   //adds plugs and sets label for current shader parameters
   void addOscPlugs() {
-    
     int toggleNum = 1;
     int sliderNum = 1;
     for (Param p : parameters) {
@@ -114,7 +112,6 @@ class GShader
     oscP5.plug(this,"rot2","/1/rotary2");
     oscP5.plug(this,"rot3","/1/rotary3");
     oscP5.plug(this,"rot4","/1/rotary4");
-    oscP5.plug(this,"toggleSlideshow","/2/toggle1");
     
     
     //bind and set labels for color and texture picker
@@ -157,7 +154,7 @@ class GShader
   }
   
   void modTexIdx() {
-    //todo: smooth texture blend on change?
+    //todo: smooth texture blend on change
     if (tex1files!=null) {
       tex1idx = tex1idx % tex1files.length;
       if (tex1idx < 0)
@@ -213,10 +210,6 @@ class GShader
       tex2idx -= 1;
       modTexIdx();
     }
-  }
-  
-  public void toggleSlideshow(float val) {
-    doSlideshow = val==1.0;
   }
   
   public void setR1(float val) {

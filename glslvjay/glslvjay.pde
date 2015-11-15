@@ -27,9 +27,9 @@ int oldMillis = 0;
 float freqs[];
 
 float smoothing = 0.7;
-
+boolean doSlideshow = false;
 void setup() {
-  size(800, 450, P2D);
+  size(1600, 900, P2D);
   frameRate(60);
   scene = createGraphics(width, height, P2D);
 
@@ -49,7 +49,7 @@ void setup() {
   freqs = new float[4];
   //load shaders
   setupShaders();
-
+  thread("slideshowThread");
 }
 
 void draw() {
@@ -95,6 +95,22 @@ void oscEvent(OscMessage theOscMessage)
   println("### addrpattern\t"+theOscMessage.addrPattern());
   String tt = theOscMessage.typetag();
   println("### typetag\t"+tt);
+  }
+}
+
+public void slideshowThread() {
+  while (true) {
+    println("slideshow runnning");
+    try
+    {    
+      Thread.sleep(10000);
+      if (doSlideshow==true)
+      {
+        println("next slide");
+        shaderList.get(currentShaderIdx).nextTex1(0.0);
+      }
+    }
+    catch(Exception e){}
   }
 }
 

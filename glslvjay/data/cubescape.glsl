@@ -18,10 +18,10 @@ uniform float freq4;
 uniform vec4 myCol1;
 uniform vec4 myCol2;
 
-// Layer between Processing and Shadertoy uniforms
-
 uniform sampler2D iChannel0;
-uniform sampler2D iChannel1;
+uniform vec2 iChannel0Size;
+
+// Layer between Processing and Shadertoy uniforms
 
 vec3 iResolution = vec3(resolution,0.0);
 float iGlobalTime = time;

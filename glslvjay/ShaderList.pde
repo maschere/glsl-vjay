@@ -5,24 +5,21 @@ int currentShaderIdx = 0;
 //load all the suitable shaders from the data directory
 //add the parameters for each shader
 void setupShaders() {
-  //sound input shader
-  //GShader soundinput = new GShader("soundinput.glsl");
-  //shaderList.add(soundinput);
-
-
-
+  textureWrap(REPEAT);
   //cubescape shader
   GShader cubescape = new GShader("cubescape.glsl");
   shaderList.add(cubescape);
   cubescape.parameters.add(new Param("brightness",-0.5,5));
   cubescape.parameters.add(new Param("rotation",-1,1));
-  cubescape.tex1files = new String[]{ "None", "wood1.jpg" };
+  cubescape.tex1files = new String[]{ "wood1.jpg" };
   
-    //galaxy shader
+  //galaxy shader
   GShader galaxy = new GShader("galaxy.glsl");
   shaderList.add(galaxy);
   galaxy.parameters.add(new Param("hideStars"));
-  galaxy.tex1files = new String[]{ "None", "wood1.jpg" };
+  galaxy.tex1files = new String[]{ "seamlesstex/" };
+  
+  
   //init current shader
   initCurrentShader();
 }
