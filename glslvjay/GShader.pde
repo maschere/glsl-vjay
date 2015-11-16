@@ -25,12 +25,11 @@ class GShader
   
   
   
-  
   GShader(String path) {
     this.path = path;
     myShader = loadShader(path);
     parameters = new ArrayList<Param>();
-    myShader.set("resolution", float(width), float(height));  
+    myShader.set("resolution", float(int(vRes*vWidth)), float(int(vRes*vHeight)));  
   }
   
 
@@ -159,6 +158,7 @@ class GShader
   void modTexIdx() {
     //todo: smooth texture blend on change?
     if (tex1files!=null) {
+
       tex1idx = tex1idx % tex1files.length;
       if (tex1idx < 0)
         tex1idx = tex1files.length-1;
@@ -185,6 +185,12 @@ class GShader
         
       if (tex2files[tex1idx]=="None")
         tex2 = createImage(2, 2, ARGB);
+      else if (tex2files[tex2idx].contains("/"))
+      {
+        File file = new File(dataPath(tex2files[tex2idx]));
+        File[] files = file.listFiles();
+        tex2 = loadImage(files[int(random(files.length))].getAbsolutePath());
+      }
       else
         tex2 = loadImage(tex2files[tex2idx]);
     }

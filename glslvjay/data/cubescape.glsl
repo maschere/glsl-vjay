@@ -35,7 +35,6 @@ uniform float brightness;
 uniform float rotation;
 
 
-
 // Created by inigo quilez - iq/2013
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 
@@ -319,7 +318,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float time = 5.0 + 0.2*iGlobalTime + 20.0*rotation;
 
     vec3 tot = vec3(0.0);
-    for( int i=0; i<8; i++ )
+    for( int i=0; i<1; i++ ) //antialias here
     {
         vec2 off = vec2( mod(float(i),2.0), mod(float(i/2),2.0) )/2.0;
      
@@ -338,7 +337,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
         tot += pow( col, vec3(0.4545) );
     }
-	tot /= 8.0;
+	//tot /= 8.0;
  
     
     // vigneting

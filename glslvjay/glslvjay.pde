@@ -28,10 +28,20 @@ float freqs[];
 
 float smoothing = 0.7;
 boolean doSlideshow = false;
+
+final int vWidth = 1920;
+final int vHeight = 1080;
+
+float vRes = 0.5;
+
+void settings() {
+  //fullScreen(P2D);
+  size(int(vRes*vWidth), int(vRes*vHeight), P2D);
+}
+
 void setup() {
-  size(1600, 900, P2D);
   frameRate(60);
-  scene = createGraphics(width, height, P2D);
+  scene = createGraphics(int(vRes*vWidth), int(vRes*vHeight), P2D);
 
   //change this to the ip address of your mobile osc device
   remoteAddr = new NetAddress("192.168.2.104", 12346);
@@ -63,7 +73,7 @@ void draw() {
 
   scene.beginDraw();
   fill(0);
-  rect(0, 0, width, height);  
+  rect(0, 0, int(vRes*vWidth), int(vRes*vHeight));  
   //apply shader
   shader(shaderList.get(currentShaderIdx).myShader);
   //on a rect
@@ -98,6 +108,7 @@ void oscEvent(OscMessage theOscMessage)
   }
 }
 
+
 public void slideshowThread() {
   while (true) {
     println("slideshow runnning");
@@ -113,7 +124,6 @@ public void slideshowThread() {
     catch(Exception e){}
   }
 }
-
 
 public void setLabel(String label, String text)
 {
