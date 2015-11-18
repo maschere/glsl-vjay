@@ -26,7 +26,8 @@ int oldMillis = 0;
 
 float freqs[];
 
-float smoothing = 0.7;
+float smoothingUp = 0.2;
+float smoothingDown = 0.8;
 boolean doSlideshow = false;
 
 final int vWidth = 1920;
