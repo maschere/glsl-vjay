@@ -33,3 +33,12 @@ class Param
   }
 
 }
+
+class AnimParam extends Param
+{
+  int mappingIdx = -1;
+  
+  AnimParam(String name, float minValue, float maxValue) {
+     super(name,minValue,maxValue);
+  }
+}

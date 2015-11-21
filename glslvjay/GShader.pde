@@ -3,21 +3,26 @@
 class GShader
 {
   String path;
+  String vertexPath;
   PShader myShader;
   ArrayList<Param> parameters;
-  
+  ArrayList<AnimParam> animParameters;
 
   float masterIntensity = 0.5;
   float masterSpeed = 1.0;
-  float i4,i1,i2,i3 = 0.5; //freq band intensities
-  int f1Low = 160;
-  int f2Low = f1Low*7;
-  int f3Low = f2Low*2;
-  int f4Low = f3Low*2;
-  int f1High = f1Low+50;
-  int f2High = f2Low+50;
-  int f3High = f3Low+50;
-  int f4High = f4Low+50;
+  
+  float[] freqValue = new float[]{ 0.5,0.5,0.5,0.5 };
+  float[] freqIntensity = new float[] { 0.5,0.5,0.5,0.5 };
+  int[] freqLow = new int[] { 160, 160*7, 160*7*2, 160*7*2*2 };
+  int[] freqHigh = new int[] { 50 + 160, 50 + 160*7, 50 + 160*7*2, 50 + 160*7*2*2 };
+  float[] freqSmoothnessUp = new float[] { 0.8,0.8,0.8,0.8 };
+  float[] freqSmoothnessDown = new float[] { 0.2,0.2,0.2,0.2 };
+  
+  int[] beatLowOnset = new int[]{ 0, 9, 18 };
+  int[] beatHighOnset = new int[]{ 8, 17, 26 };;
+  int[] beatThreshold = new int[]{ 4, 4, 4 };;
+  float[] beatValue = new float[3];
+  float[] beatSmoothness = new float[3];
   
   //colors and textures
   String color1name,color2name;
@@ -29,47 +34,59 @@ class GShader
   
   
   GShader(String path) {
+    this(path,null);
+  }
+   GShader(String path, String vertexPath) {
+    this.vertexPath = vertexPath;
     this.path = path;
     myShader = loadShader(path);
     parameters = new ArrayList<Param>();
-    myShader.set("resolution", float(int(vRes*vWidth)), float(int(vRes*vHeight)));  
+    animParameters = new ArrayList<AnimParam>();
+    myShader.set("resolution", float(int(vRes*vWidth)), float(int(vRes*vHeight)));
   }
   
+  
+  //for mapping params to computed values, this makes the required lookup
+  //i = [0,3] -> 4 freqs
+  //i = [4,6] -> 3 beats
+  //i = 7 -> time
+  float getMappingValue(int i)
+  {
+    return 0.5;
+  }
 
   //sets all the uniforms of this shader. should be called in draw step
   void setUniforms() {
     
-    //set frequencies
+    //set time
     scaledMillis += deltaMillis / 1000.0 * masterSpeed * masterSpeed;
     myShader.set("time", scaledMillis);
 
-    float currentFreq = fft.calcAvg(f1Low,f1High);
-    if (currentFreq < freqs[0])
-      freqs[0] = smoothingDown*freqs[0] + (1-smoothingDown)*currentFreq;
-    else
-      freqs[0] = smoothingUp*freqs[0] + (1-smoothingUp)*currentFreq;
-    myShader.set("freq1",freqs[0]*masterIntensity*i1);
+    //set frequencies
+    for (int i = 0; i < 4; i++)
+    {
+      float currentFreq = fft.calcAvg(freqLow[i],freqHigh[i]);
+      if (currentFreq < freqValue[i])
+        freqValue[i] = smoothingDown*freqValue[i] + (1-smoothingDown)*currentFreq;
+      else
+        freqValue[i] = smoothingUp*freqValue[i] + (1-smoothingUp)*currentFreq;
+      myShader.set("freq"+(i+1),freqValue[i]*masterIntensity*freqIntensity[i]);
+    }
 
-    currentFreq = fft.calcAvg(f2Low,f2High);
-    if (currentFreq < freqs[1])
-      freqs[1] = smoothingDown*freqs[1] + (1-smoothingDown)*currentFreq;
-    else
-      freqs[1] = smoothingUp*freqs[1] + (1-smoothingUp)*currentFreq;
-    myShader.set("freq2",freqs[1]*masterIntensity*i2);
-
-    currentFreq = fft.calcAvg(f3Low,f3High);
-    if (currentFreq < freqs[2])
-      freqs[2] = smoothingDown*freqs[2] + (1-smoothingDown)*currentFreq;
-    else
-      freqs[2] = smoothingUp*freqs[2] + (1-smoothingUp)*currentFreq;
-    myShader.set("freq3",freqs[2]*masterIntensity*i3);
-
-    currentFreq = fft.calcAvg(f4Low,f4High);
-    if (currentFreq < freqs[3])
-      freqs[3] = smoothingDown*freqs[3] + (1-smoothingDown)*currentFreq;
-    else
-      freqs[3] = smoothingUp*freqs[3] + (1-smoothingUp)*currentFreq;
-    myShader.set("freq4",freqs[3]*masterIntensity*i4);
+    
+    //set beat
+    for (int i = 0; i < 3; i++) {
+      if (beat.isRange(beatLowOnset[i], beatHighOnset[i], beatThreshold[i]) )
+      {
+        beatValue[i] = 1;
+      }
+      else //decay beat value
+      {
+        beatValue[i] *= beatSmoothness[i];
+      }
+      myShader.set("beat"+(i+1), beatValue[i]);
+    }
+    
     
     //set colors and textures if not null
     if (color1name!=null && color1!=null)
@@ -89,8 +106,19 @@ class GShader
       myShader.set("iChannel1",tex2);
     }
 
+    //static params
     for (Param p : parameters) {
       myShader.set(p.name, p.value);
+    }
+    
+    //animated, mapped params
+    for (AnimParam ap : animParameters) {
+      if (ap.mappingIdx != -1)
+      {
+        //set value
+        ap.set(getMappingValue(ap.mappingIdx)); 
+      }
+      myShader.set(ap.name, ap.value);
     }
   }
   
@@ -122,20 +150,12 @@ class GShader
     oscP5.plug(this,"smoothUpSlider","/1/faderSmoothUp");
     oscP5.plug(this,"smoothDownSlider","/1/faderSmoothDown");
     
-    oscP5.plug(this,"setf1Low","/1/freq1low");
-    oscP5.plug(this,"setf2Low","/1/freq2low");
-    oscP5.plug(this,"setf3Low","/1/freq3low");
-    oscP5.plug(this,"setf4Low","/1/freq4low");
-    
-    oscP5.plug(this,"setf1High","/1/freq1high");
-    oscP5.plug(this,"setf2High","/1/freq2high");
-    oscP5.plug(this,"setf3High","/1/freq3high");
-    oscP5.plug(this,"setf4High","/1/freq4high");
-    
-    oscP5.plug(this,"setf1Intensity","/1/freq1i");
-    oscP5.plug(this,"setf2Intensity","/1/freq2i");
-    oscP5.plug(this,"setf3Intensity","/1/freq3i");
-    oscP5.plug(this,"setf4Intensity","/1/freq4i");
+    for (int i = 1; i < 5; i++)
+    {
+      oscP5.plug(this,"setf"+i+"Low","/1/freq"+i+"low");
+      oscP5.plug(this,"setf"+i+"High","/1/freq"+i+"high");
+      oscP5.plug(this,"setf"+i+"Intensity","/1/freq"+i+"i");
+    }
 
     oscP5.plug(this,"toggleSlideshow","/2/toggle1");
     
@@ -288,50 +308,50 @@ class GShader
   }
   
   public void setf1Low(float val) {
-    f1Low = 20 + (int)(val*16000);
-    f1High = max(f1High, f1Low+5);
+    freqLow[0] = 20 + (int)(val*16000);
+    freqHigh[0] = max(freqHigh[0], freqLow[0]+5);
   }
   public void setf2Low(float val) {
-    f2Low = 20 + (int)(val*16000);
-    f2High = max(f2High, f2Low+5);
+    freqLow[1] = 20 + (int)(val*16000);
+    freqHigh[1] = max(freqHigh[1], freqLow[1]+5);
   }
   public void setf3Low(float val) {
-    f3Low = 20 + (int)(val*16000);
-    f3High = max(f3High, f3Low+5);
+    freqLow[2] = 20 + (int)(val*16000);
+    freqHigh[2] = max(freqHigh[2], freqLow[2]+5);
   }
   public void setf4Low(float val) {
-    f4Low = 20 + (int)(val*16000);
-    f4High = max(f4High, f4Low+5);
+    freqLow[3] = 20 + (int)(val*16000);
+    freqHigh[3] = max(freqHigh[3], freqLow[3]+5);
   }
   
   public void setf1High(float val) {
-    f1High = 20 + (int)(val*16000);
-    f1Low = min(f1Low, f1High-5);
+    freqHigh[0] = 20 + (int)(val*16000);
+    freqLow[0] = min(freqLow[0], freqHigh[0]-5);
   }
   public void setf2High(float val) {
-    f2High = 20 + (int)(val*16000);
-    f2Low = min(f2Low, f2High-5);
+    freqHigh[1] = 20 + (int)(val*16000);
+    freqLow[1] = min(freqLow[2], freqHigh[1]-5);
   }
   public void setf3High(float val) {
-    f3High = 20 + (int)(val*16000);
-    f3Low = min(f3Low, f3High-5);
+    freqHigh[2] = 20 + (int)(val*16000);
+    freqLow[2] = min(freqLow[2], freqHigh[2]-5);
   }
   public void setf4High(float val) {
-    f4High = 20 + (int)(val*16000);
-    f4Low = min(f4Low, f4High-5);
+    freqHigh[3] = 20 + (int)(val*16000);
+    freqLow[3] = min(freqLow[3], freqHigh[3]-5);
   }
   
   public void setf1Intensity(float val) {
-    i1 = val;
+    freqIntensity[0] = val;
   }
   public void setf2Intensity(float val) {
-    i2 = val;
+    freqIntensity[1] = val;
   }
   public void setf3Intensity(float val) {
-    i3 = val;
+    freqIntensity[2] = val;
   }
   public void setf4Intensity(float val) {
-    i4 = val;
+    freqIntensity[3] = val;
   }
 
 }

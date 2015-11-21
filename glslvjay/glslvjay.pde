@@ -13,6 +13,8 @@ import ddf.minim.analysis.*;
 Minim minim;
 AudioInput in;
 FFT fft;
+BeatDetect beat;
+BeatListener bl;
 
 //osc
 OscP5 oscP5;
@@ -24,11 +26,11 @@ float scaledMillis = 0.0;
 int deltaMillis = 0;
 int oldMillis = 0;
 
-float freqs[];
-
 float smoothingUp = 0.2;
 float smoothingDown = 0.8;
 boolean doSlideshow = false;
+
+int beatSensitivity = 300;
 
 final int vWidth = 1920;
 final int vHeight = 1080;
@@ -37,12 +39,12 @@ float vRes = 0.5;
 
 void settings() {
   //fullScreen(P2D);
-  size(int(vRes*vWidth), int(vRes*vHeight), P2D);
+  size(int(vRes*vWidth), int(vRes*vHeight), P3D);
 }
 
 void setup() {
   frameRate(60);
-  scene = createGraphics(int(vRes*vWidth), int(vRes*vHeight), P2D);
+  scene = createGraphics(int(vRes*vWidth), int(vRes*vHeight), P3D);
 
   //change this to the ip address of your mobile osc device
   remoteAddr = new NetAddress("192.168.2.104", 12346);
@@ -57,7 +59,11 @@ void setup() {
   //fft analysis for frequency spectrum
   fft = new FFT(in.bufferSize(), in.sampleRate());
   
-  freqs = new float[4];
+  beat = new BeatDetect(in.bufferSize(), in.sampleRate());
+  beat.detectMode(BeatDetect.FREQ_ENERGY);
+  beat.setSensitivity(beatSensitivity);
+  bl = new BeatListener(beat, in);  
+  
   //load shaders
   setupShaders();
   thread("slideshowThread");
@@ -88,7 +94,7 @@ void draw() {
   //debug: show fps
   textSize(24);
   fill(255);
-  text(((int)frameRate), 10, 30);
+  text(int(frameRate), 10, 30);
 }
 
 
@@ -102,10 +108,19 @@ void oscEvent(OscMessage theOscMessage)
 {
   if(theOscMessage.isPlugged()==false) {
   /* print the address pattern and the typetag of the received OscMessage */
-  println("### received an osc message.");
-  println("### addrpattern\t"+theOscMessage.addrPattern());
-  String tt = theOscMessage.typetag();
-  println("### typetag\t"+tt);
+  //get mapping multi toggles here
+  String addrP = theOscMessage.addrPattern();
+  if (addrP.contains("/4/multitoggle"))
+  {
+    //get parameter id and toggle id from osc
+  }
+  else 
+  {
+    println("### received an osc message.");
+    println("### addrpattern\t"+addrP);
+    String tt = theOscMessage.typetag();
+    println("### typetag\t"+tt);
+  }
   }
 }
 
@@ -140,4 +155,27 @@ void stop()
  minim.stop();
 
  super.stop();
+}
+
+class BeatListener implements AudioListener
+{
+  private BeatDetect beat;
+  private AudioInput source;
+  
+  BeatListener(BeatDetect beat, AudioInput source)
+  {
+    this.source = source;
+    this.source.addListener(this);
+    this.beat = beat;
+  }
+  
+  void samples(float[] samps)
+  {
+    beat.detect(source.mix);
+  }
+  
+  void samples(float[] sampsL, float[] sampsR)
+  {
+    beat.detect(source.mix);
+  }
 }
