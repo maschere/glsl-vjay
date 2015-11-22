@@ -26,16 +26,15 @@ float scaledMillis = 0.0;
 int deltaMillis = 0;
 int oldMillis = 0;
 
-float smoothingUp = 0.2;
-float smoothingDown = 0.8;
 boolean doSlideshow = false;
-
-int beatSensitivity = 300;
 
 final int vWidth = 1920;
 final int vHeight = 1080;
 
 float vRes = 0.5;
+
+float fftMin=2.0;
+float fftMax=20.0;
 
 void settings() {
   //fullScreen(P2D);
@@ -55,13 +54,13 @@ void setup() {
 
   // get a line in from Minim, default bit depth is 16
   // on windows, set "Stereo Mix" as default input to get the sound that is currently playing
-  in = minim.getLineIn(Minim.STEREO, 1024);
+  in = minim.getLineIn(Minim.STEREO, 2048);
   //fft analysis for frequency spectrum
   fft = new FFT(in.bufferSize(), in.sampleRate());
   
   beat = new BeatDetect(in.bufferSize(), in.sampleRate());
   beat.detectMode(BeatDetect.FREQ_ENERGY);
-  beat.setSensitivity(beatSensitivity);
+  beat.setSensitivity(200);
   bl = new BeatListener(beat, in);  
   
   //load shaders
@@ -95,6 +94,15 @@ void draw() {
   textSize(24);
   fill(255);
   text(int(frameRate), 10, 30);
+  
+  //show mapping values
+  stroke(255,255,255,200);
+  strokeWeight(10);
+  for (int i = 0; i < 50; i++) {
+    float mVal = shaderList.get(currentShaderIdx).getMappingValue(i);
+    if (mVal != -1.0)
+      line(10+i*15,40,10+i*15,40+int(0.3*vRes*vHeight*mVal));
+  }
 }
 
 
@@ -155,6 +163,15 @@ void stop()
  minim.stop();
 
  super.stop();
+}
+
+float dB(float x) {
+  if (x == 0) {
+    return 0;
+  }
+  else {
+    return 10 * (float)Math.log10(x);
+  }
 }
 
 class BeatListener implements AudioListener

@@ -6,13 +6,6 @@ int currentShaderIdx = 0;
 //add the parameters for each shader
 void setupShaders() {
   textureWrap(REPEAT);
-
-  //ringOfColor shader
-  GShader ringOfColor = new GShader("ringofcolor.glsl");
-  shaderList.add(ringOfColor);
-  //galaxy.parameters.add(new Param("hideStars"));
-  //galaxy.tex1files = new String[]{ "seamlesstex/" };
-  
   //cubescape shader
   GShader cubescape = new GShader("cubescape.glsl");
   shaderList.add(cubescape);
@@ -25,6 +18,16 @@ void setupShaders() {
   shaderList.add(galaxy);
   galaxy.parameters.add(new Param("hideStars"));
   galaxy.tex1files = new String[]{ "seamlesstex/" };
+
+  //ringOfColor shader
+  GShader ringOfColor = new GShader("ringofcolor.glsl");
+  shaderList.add(ringOfColor);
+  //galaxy.parameters.add(new Param("hideStars"));
+  //galaxy.tex1files = new String[]{ "seamlesstex/" };
+  
+
+  
+
   
   //init current shader
   initCurrentShader();

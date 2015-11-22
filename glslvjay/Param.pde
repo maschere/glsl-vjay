@@ -5,14 +5,13 @@ class Param
   String name;
   float value;
   float minValue, maxValue;
-  boolean isBool;
+  boolean isBool = false;
   
   Param(String name, float minValue, float maxValue) {
     this.name = name;
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.set(0.5);
-    isBool = false;    
   }
   
   Param(String name) {
@@ -38,7 +37,23 @@ class AnimParam extends Param
 {
   int mappingIdx = -1;
   
+  final float trueMin;
+  final float trueMax;
+  
   AnimParam(String name, float minValue, float maxValue) {
      super(name,minValue,maxValue);
+     trueMin = minValue;
+     trueMax = maxValue;
+  }
+  
+  public void setCutOffMin(float val) {
+    minValue = trueMin + val * (trueMax-trueMin);
+    if (minValue > maxValue)
+      minValue = maxValue;
+  }
+  public void setCutOffMax(float val) {
+    maxValue = trueMax - val * (trueMax-trueMin);
+    if (maxValue < minValue)
+      maxValue = minValue;
   }
 }

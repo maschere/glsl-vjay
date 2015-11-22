@@ -12,17 +12,16 @@ class GShader
   float masterSpeed = 1.0;
   
   float[] freqValue = new float[]{ 0.5,0.5,0.5,0.5 };
-  float[] freqIntensity = new float[] { 0.5,0.5,0.5,0.5 };
   int[] freqLow = new int[] { 160, 160*7, 160*7*2, 160*7*2*2 };
   int[] freqHigh = new int[] { 50 + 160, 50 + 160*7, 50 + 160*7*2, 50 + 160*7*2*2 };
   float[] freqSmoothnessUp = new float[] { 0.8,0.8,0.8,0.8 };
   float[] freqSmoothnessDown = new float[] { 0.2,0.2,0.2,0.2 };
   
   int[] beatLowOnset = new int[]{ 0, 9, 18 };
-  int[] beatHighOnset = new int[]{ 8, 17, 26 };;
-  int[] beatThreshold = new int[]{ 4, 4, 4 };;
+  int[] beatHighOnset = new int[]{ 8, 17, 26 };
+  int[] beatThreshold = new int[]{ 4, 4, 4 };
   float[] beatValue = new float[3];
-  float[] beatSmoothness = new float[3];
+  float[] beatSmoothness = new float[]{ 0.3,0.3,0.3 };
   
   //colors and textures
   String color1name,color2name;
@@ -52,7 +51,36 @@ class GShader
   //i = 7 -> time
   float getMappingValue(int i)
   {
-    return 0.5;
+    float returnVal = -1.0;
+    
+    switch (i) {
+     case 2:
+       returnVal = freqValue[0];
+       break;
+     case 3:
+       returnVal = freqValue[1];
+       break;
+     case 4:
+       returnVal = freqValue[2];
+       break;
+     case 5:
+       returnVal = freqValue[3];
+       break;
+     case 6:
+       returnVal = beatValue[0];
+       break;
+     case 7:
+       returnVal = beatValue[1];
+       break;
+     case 8:
+       returnVal = beatValue[2];
+       break;
+     case 9:
+       returnVal = 0.5*(cos(scaledMillis)+1);
+       break;
+    }
+    
+    return returnVal;
   }
 
   //sets all the uniforms of this shader. should be called in draw step
@@ -65,13 +93,27 @@ class GShader
     //set frequencies
     for (int i = 0; i < 4; i++)
     {
-      float currentFreq = fft.calcAvg(freqLow[i],freqHigh[i]);
+      float currentFreqRaw = dB(fft.calcAvg(freqLow[i],freqHigh[i]));
+      
+      //aweight
+      float dbWeight = calculateAWeightingDBAtFrequency(freqLow[i]+(freqHigh[i]-freqLow[i])*0.5);
+      
+      //cutoff
+      currentFreqRaw = max(currentFreqRaw+dbWeight*0.5,fftMin);
+      
+      if (fftMax < currentFreqRaw)
+        fftMax = fftMax*0.4 + currentFreqRaw*0.6;
+
+      float currentFreq = (currentFreqRaw-fftMin)/(fftMax-fftMin);
+
       if (currentFreq < freqValue[i])
-        freqValue[i] = smoothingDown*freqValue[i] + (1-smoothingDown)*currentFreq;
+        freqValue[i] = freqSmoothnessDown[i]*freqValue[i] + (1-freqSmoothnessDown[i])*currentFreq;
       else
-        freqValue[i] = smoothingUp*freqValue[i] + (1-smoothingUp)*currentFreq;
-      myShader.set("freq"+(i+1),freqValue[i]*masterIntensity*freqIntensity[i]);
+        freqValue[i] = freqSmoothnessUp[i]*freqValue[i] + (1-freqSmoothnessUp[i])*currentFreq;
+      myShader.set("freq"+(i+1),freqValue[i]*masterIntensity);
     }
+    //decay min/max
+    fftMax = max(0.98*fftMax,1.0);
 
     
     //set beat
@@ -115,8 +157,12 @@ class GShader
     for (AnimParam ap : animParameters) {
       if (ap.mappingIdx != -1)
       {
-        //set value
-        ap.set(getMappingValue(ap.mappingIdx)); 
+        float mval = getMappingValue(ap.mappingIdx);
+        if (mval > -1.0)
+        {
+          //set value
+          ap.set(mval);
+        }
       }
       myShader.set(ap.name, ap.value);
     }
@@ -147,14 +193,19 @@ class GShader
     //bind default plugs
     oscP5.plug(this,"intensitySlider","/1/faderIntensity");
     oscP5.plug(this,"speedSlider","/1/faderSpeed");
-    oscP5.plug(this,"smoothUpSlider","/1/faderSmoothUp");
-    oscP5.plug(this,"smoothDownSlider","/1/faderSmoothDown");
     
     for (int i = 1; i < 5; i++)
     {
       oscP5.plug(this,"setf"+i+"Low","/1/freq"+i+"low");
       oscP5.plug(this,"setf"+i+"High","/1/freq"+i+"high");
-      oscP5.plug(this,"setf"+i+"Intensity","/1/freq"+i+"i");
+      //oscP5.plug(this,"setf"+i+"Intensity","/1/freq"+i+"i");
+    }
+    
+    for (int i = 1; i < 4; i++)
+    {
+      oscP5.plug(this,"setb"+i+"Low","/1/beat"+i+"low");
+      oscP5.plug(this,"setb"+i+"High","/1/beat"+i+"high");
+      //oscP5.plug(this,"setf"+i+"Intensity","/1/freq"+i+"i");
     }
 
     oscP5.plug(this,"toggleSlideshow","/2/toggle1");
@@ -300,13 +351,9 @@ class GShader
   public void speedSlider(float val) {
     masterSpeed = val;
   }
-  public void smoothUpSlider(float val) {
-    smoothingUp = sqrt(val);
-  }
-  public void smoothDownSlider(float val) {
-    smoothingDown = sqrt(val);
-  }
   
+
+  //frequency plugs
   public void setf1Low(float val) {
     freqLow[0] = 20 + (int)(val*16000);
     freqHigh[0] = max(freqHigh[0], freqLow[0]+5);
@@ -341,17 +388,87 @@ class GShader
     freqLow[3] = min(freqLow[3], freqHigh[3]-5);
   }
   
-  public void setf1Intensity(float val) {
-    freqIntensity[0] = val;
+  public void setf1smoothUp(float val) {
+    freqSmoothnessUp[0] = val;
   }
-  public void setf2Intensity(float val) {
-    freqIntensity[1] = val;
+  public void setf2smoothUp(float val) {
+    freqSmoothnessUp[1] = val;
   }
-  public void setf3Intensity(float val) {
-    freqIntensity[2] = val;
+  public void setf3smoothUp(float val) {
+    freqSmoothnessUp[2] = val;
   }
-  public void setf4Intensity(float val) {
-    freqIntensity[3] = val;
+  public void setf4smoothUp(float val) {
+    freqSmoothnessUp[3] = val;
   }
+
+  public void setf1smoothDown(float val) {
+    freqSmoothnessDown[0] = val;
+  }
+  public void setf2smoothDown(float val) {
+    freqSmoothnessDown[1] = val;
+  }
+  public void setf3smoothDown(float val) {
+    freqSmoothnessDown[2] = val;
+  }
+  public void setf4smoothDown(float val) {
+    freqSmoothnessDown[3] = val;
+  }
+
+
+  //beat plugs
+  public void setb1smoothDown(float val) {
+    beatSmoothness[0] = val;
+  }
+  public void setb2smoothDown(float val) {
+    beatSmoothness[1] = val;
+  }
+  public void setb3smoothDown(float val) {
+    beatSmoothness[2] = val;
+  }
+  public void setb4smoothDown(float val) {
+    beatSmoothness[3] = val;
+  }
+  
+  public void setb1Low(float val) {
+    beatLowOnset[0] = (int)(val*beat.detectSize()*0.999);
+    beatLowOnset[0] = min(beatLowOnset[0],beatHighOnset[0]);
+  }
+  public void setb2Low(float val) {
+    beatLowOnset[1] = (int)(val*beat.detectSize()*0.999);
+    beatLowOnset[1] = min(beatLowOnset[1],beatHighOnset[1]);
+  }
+  public void setb3Low(float val) {
+    beatLowOnset[2] = (int)(val*beat.detectSize()*0.999);
+    beatLowOnset[2] = min(beatLowOnset[2],beatHighOnset[2]);
+  }
+  
+  public void setb1High(float val) {
+    beatHighOnset[0] = (int)(val*beat.detectSize()*0.999);
+    beatHighOnset[0] = max(beatLowOnset[0],beatHighOnset[0]);
+  }
+  public void setb2High(float val) {
+    beatHighOnset[1] = (int)(val*beat.detectSize()*0.999);
+    beatHighOnset[1] = max(beatLowOnset[1],beatHighOnset[1]);
+  }
+  public void setb3High(float val) {
+    beatHighOnset[2] = (int)(val*beat.detectSize()*0.999);
+    beatHighOnset[2] = max(beatLowOnset[2],beatHighOnset[2]);
+  }
+  
+  public void setb1Threshold(float val) {
+    beatThreshold[0] = 1+(int)(val*(beatHighOnset[0]-beatLowOnset[0]));
+  }
+  public void setb2Threshold(float val) {
+    beatThreshold[1] = 1+(int)(val*(beatHighOnset[1]-beatLowOnset[1]));
+  }
+  public void setb3Threshold(float val) {
+    beatThreshold[2] = 1+(int)(val*(beatHighOnset[2]-beatLowOnset[2]));
+  }
+  
+  public void setbSensitivity(float val) {
+    beat.setSensitivity(10+int(val*1000)); 
+  }
+
+
 
 }

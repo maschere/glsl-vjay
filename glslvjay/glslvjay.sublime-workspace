@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"beat",
+				"beatSmoothness"
+			],
+			[
 				"vertex",
 				"vertexPath"
 			],
@@ -31,7 +35,7 @@
 			"file": "glslvjay.pde",
 			"settings":
 			{
-				"buffer_size": 3195,
+				"buffer_size": 3929,
 				"line_ending": "Windows"
 			}
 		},
@@ -39,7 +43,7 @@
 			"file": "GShader.pde",
 			"settings":
 			{
-				"buffer_size": 9361,
+				"buffer_size": 11294,
 				"line_ending": "Windows"
 			}
 		},
@@ -162,6 +166,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Low",
+			"Up",
 			"iChannel1",
 			"minVal",
 			"minBandwidthPerOctave",
@@ -169,11 +175,13 @@
 			"ichannel"
 		],
 		"highlight": true,
-		"in_selection": false,
+		"in_selection": true,
 		"preserve_case": false,
 		"regex": false,
 		"replace_history":
 		[
+			"High",
+			"Down"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -193,15 +201,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3195,
+						"buffer_size": 3929,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1953,
-								1953
+								0,
+								0
 							]
 						],
 						"settings":
@@ -223,15 +231,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9361,
+						"buffer_size": 11294,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								962,
-								962
+								11156,
+								11156
 							]
 						],
 						"settings":
@@ -241,7 +249,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 5824.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -383,7 +391,7 @@
 	"project": "glslvjay.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 62.0
 	},
 	"save_all_on_build": true,
 	"select_file":
