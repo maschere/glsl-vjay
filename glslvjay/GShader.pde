@@ -23,6 +23,9 @@ class GShader
   float[] beatValue = new float[3];
   float[] beatSmoothness = new float[]{ 0.3,0.3,0.3 };
   
+  //waveform
+  PImage imgWaveform = createImage(in.bufferSize()/2, 1, RGB);
+  
   //colors and textures
   String color1name,color2name;
   float[] color1,color2;
@@ -129,6 +132,15 @@ class GShader
       myShader.set("beat"+(i+1), beatValue[i]);
     }
     
+    //set waveform
+    
+    imgWaveform.loadPixels();
+    for (int i = 0; i < imgWaveform.pixels.length; i++) {
+      float waveVal = (in.mix.get(i*2)+1)/2.0 * 255;
+      imgWaveform.pixels[i] = color(waveVal,waveVal,waveVal); 
+    }
+    imgWaveform.updatePixels();
+    myShader.set("texWaveform",imgWaveform);
     
     //set colors and textures if not null
     if (color1name!=null && color1!=null)

@@ -6,6 +6,11 @@ int currentShaderIdx = 0;
 //add the parameters for each shader
 void setupShaders() {
   textureWrap(REPEAT);
+  
+  //soundinput shader
+  GShader inputsound = new GShader("inputsound.glsl");
+  shaderList.add(inputsound);
+  
   //cubescape shader
   GShader cubescape = new GShader("cubescape.glsl");
   shaderList.add(cubescape);

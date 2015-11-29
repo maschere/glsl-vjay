@@ -31,6 +31,8 @@ boolean doSlideshow = false;
 final int vWidth = 1920;
 final int vHeight = 1080;
 
+final int bufferSize = 1024;
+
 float vRes = 0.5;
 
 float fftMin=2.0;
@@ -54,7 +56,7 @@ void setup() {
 
   // get a line in from Minim, default bit depth is 16
   // on windows, set "Stereo Mix" as default input to get the sound that is currently playing
-  in = minim.getLineIn(Minim.STEREO, 2048);
+  in = minim.getLineIn(Minim.STEREO, bufferSize);
   //fft analysis for frequency spectrum
   fft = new FFT(in.bufferSize(), in.sampleRate());
   
