@@ -8,7 +8,7 @@ class GShader
   ArrayList<Param> parameters;
   ArrayList<AnimParam> animParameters;
 
-  float masterIntensity = 0.5;
+  float masterIntensity = 0.7;
   float masterSpeed = 1.0;
   
   float[] freqValue = new float[]{ 0.5,0.5,0.5,0.5 };
@@ -24,7 +24,11 @@ class GShader
   float[] beatSmoothness = new float[]{ 0.3,0.3,0.3 };
   
   //waveform
-  PImage imgWaveform = createImage(in.bufferSize()/2, 1, RGB);
+  PImage waveImg = createImage(in.bufferSize()/2, 1, RGB);
+  float[] wavePixels = new float[in.bufferSize()/2];
+  float[] wavePixelsOld = new float[in.bufferSize()/2];
+  int waveSmoothnessX = 0;
+  float waveSmoothnessY = 0.0;
   
   //colors and textures
   String color1name,color2name;
@@ -129,18 +133,57 @@ class GShader
       {
         beatValue[i] *= beatSmoothness[i];
       }
-      myShader.set("beat"+(i+1), beatValue[i]);
+      myShader.set("beat"+(i+1), beatValue[i]*masterIntensity);
     }
     
     //set waveform
     
-    imgWaveform.loadPixels();
-    for (int i = 0; i < imgWaveform.pixels.length; i++) {
-      float waveVal = (in.mix.get(i*2)+1)/2.0 * 255;
-      imgWaveform.pixels[i] = color(waveVal,waveVal,waveVal); 
+    //get values
+    for (int i = 0; i < wavePixels.length; i++) {
+      int n = 1;
+      float waveVal = in.mix.get(i*2);//(in.mix.get(i*2)+1)/2.0;
+      if (i>0)
+      {
+        waveVal += in.mix.get(i*2 - 1);//(in.mix.get(i*2 - 1)+1)/2.0;
+        n += 1;
+      }
+      if (i<wavePixels.length-1)
+      {
+        waveVal += in.mix.get(i*2 + 1);//(in.mix.get(i*2 + 1)+1)/2.0;
+        n += 1;
+      }
+      waveVal /= n;
+      wavePixels[i] = waveVal; 
     }
-    imgWaveform.updatePixels();
-    myShader.set("texWaveform",imgWaveform);
+    //smoothness
+    for (int j = 0; j < waveSmoothnessX; j++) {
+       for (int i = 0; i < wavePixels.length; i++) {
+        int n = 1;
+        float waveVal = wavePixels[i];
+        if (i>0)
+        {
+          waveVal += wavePixels[i-1];
+          n += 1;
+        }
+        if (i<wavePixels.length-1)
+        {
+          waveVal += wavePixels[i+1];
+          n += 1;
+        }
+        waveVal /= n;
+        wavePixels[i] = waveVal; 
+      }
+    }
+    //y smoothness
+    waveImg.loadPixels();
+    for (int i = 0; i < wavePixels.length; i++) {
+      float waveVal = waveSmoothnessY * wavePixelsOld[i] + (1-waveSmoothnessY) * wavePixels[i];
+      wavePixelsOld[i] = waveVal;
+      waveVal = (waveVal * masterIntensity+1)/2*255;
+      waveImg.pixels[i] = color(waveVal,waveVal,waveVal);
+    }
+    waveImg.updatePixels();
+    myShader.set("texWaveform",waveImg);
     
     //set colors and textures if not null
     if (color1name!=null && color1!=null)
@@ -206,6 +249,7 @@ class GShader
     oscP5.plug(this,"intensitySlider","/1/faderIntensity");
     oscP5.plug(this,"speedSlider","/1/faderSpeed");
     
+    //bind frequency sliders
     for (int i = 1; i < 5; i++)
     {
       oscP5.plug(this,"setf"+i+"Low","/1/freq"+i+"low");
@@ -213,12 +257,17 @@ class GShader
       //oscP5.plug(this,"setf"+i+"Intensity","/1/freq"+i+"i");
     }
     
+    //bind beat sliders
     for (int i = 1; i < 4; i++)
     {
       oscP5.plug(this,"setb"+i+"Low","/1/beat"+i+"low");
       oscP5.plug(this,"setb"+i+"High","/1/beat"+i+"high");
       //oscP5.plug(this,"setf"+i+"Intensity","/1/freq"+i+"i");
     }
+    
+    //bind waveform sliders
+    oscP5.plug(this,"setwSmoothnessX","/1/waveSmoothX");
+    oscP5.plug(this,"setwSmoothnessY","/1/waveSmoothY");
 
     oscP5.plug(this,"toggleSlideshow","/2/toggle1");
     
@@ -479,6 +528,13 @@ class GShader
   
   public void setbSensitivity(float val) {
     beat.setSensitivity(10+int(val*1000)); 
+  }
+  
+  public void setwSmoothnessX(float val) {
+    waveSmoothnessX = int(1000*val); 
+  }
+  public void setwSmoothnessY(float val) {
+    waveSmoothnessY = val; 
   }
 
 
