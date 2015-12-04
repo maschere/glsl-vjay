@@ -1,10 +1,19 @@
 # glsl-vjay
-Performance-ready Processing sketch to use different GLSL shaders (mostly from shadertoy) for live music visualization with OSC.
+Performance-ready [Processing](https://processing.org/) sketch to use different GLSL shaders (mostly from shadertoy) for live music visualization with OSC.
 
 glsl-vjay supports / will support the following features:
 - [x] easy integration of www.shadertoy.com fragment shaders
-- [x] Audio analysis of "What you hear" (requires some setup) using FFT and beat detection
-- [x] [TouchOSC](http://hexler.net/software/touchosc) layout to control default parameters (FFT / beat detection settings, speed, shader to use, textures to use) as well as shader specific parameters
-- [x] map shader parameters to an OSC control
-- [x] Texture-slide show to periodically change input textures for shaders
-- [ ] map shader parameters to FFT, BeatDetection or Time
+- [x] Audio analysis
+  - [x] live input from "Stereomix" / "What you hear" (requires some setup)
+  - [x] FFT, waveform and beat detection
+- [x] [TouchOSC](http://hexler.net/software/touchosc) layout for live adjustments
+  - [x] sensitivity and smoothness 
+  - [x] speed and intensity
+  - [x] shader / texture selection
+  - [x] shader specific parameters
+- [x] automatically maps shader parameters to an OSC control
+- [x] Texture slide-show
+  - [x] periodically change input textures for shaders
+  - [ ] smooth blending between two textures
+- [ ] map shader parameters to dynamic values from FFT, BeatDetection or Time
+- [ ] support for multipass / feedback shaders
