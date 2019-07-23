@@ -194,7 +194,7 @@ class GShader
       
     if (tex1files!=null && tex1!=null)
     {
-      myShader.set("iChannel0",tex1); //<>//
+      myShader.set("iChannel0",tex1); //<>// //<>//
       myShader.set("iChannel0ar",tex1.width / float(tex1.height));
     }
       
@@ -354,7 +354,7 @@ class GShader
   
   public void nextTex1(float val) {
     if (val==0.0){
-      tex1idx += 1; //<>//
+      tex1idx += 1; //<>// //<>//
       modTexIdx();
     }
   }
